@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VitaCheck — AI Health Risk Predictor</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Loading Overlay ─────────────────── -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Analysing your health profile…</div>
+  </div>
+
+  <!-- ── Navigation ──────────────────────── -->
+  <nav>
+    <div class="wrap">
+      <div class="logo">
+        <div class="logo-dot"></div>
+        Vita<span>Check</span>
+      </div>
+      <div class="nav-badge">AI-Powered</div>
+    </div>
+  </nav>
+
+  <div class="wrap">
+
+    <!-- ── Hero ──────────────────────────── -->
+    <div class="hero">
+      <div class="hero-tag">🧬 Predictive Health Intelligence</div>
+      <h1>Know Your Risk.<br><em>Before It Knows You.</em></h1>
+      <p class="hero-sub">
+        Enter your lifestyle data and let our AI model assess your risk of developing
+        diabetes, heart disease, and other lifestyle conditions — then get personalised
+        prevention guidance.
+      </p>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">94%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">12+</span>
+          <span class="stat-label">Risk Factors</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">3</span>
+          <span class="stat-label">Disease Models</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Assessment Form ────────────────── -->
+    <div class="form-card" id="formCard">
+      <div class="form-header">
+        <div class="form-header-icon">📋</div>
+        <div>
+          <h2>Health Profile Assessment</h2>
+          <p>All fields contribute to a more accurate prediction</p>
+        </div>
+      </div>
+
+      <div class="form-body">
+        <!-- Progress Bar -->
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="disclaimer">
+          <strong>⚠️ Medical Disclaimer:</strong> This tool is for educational and
+          informational purposes only. It does not replace professional medical advice,
+          diagnosis, or treatment. Always consult a qualified healthcare provider.
+        </div>
+
+        <!-- ── Section: Demographics ──────── -->
+        <div class="section-label">Demographics</div>
+        <div class="grid2">
+          <div class="field">
+            <label>Age (years)</label>
+            <input type="number" id="age" min="10" max="100" placeholder="e.g. 35" />
+          </div>
+          <div class="field">
+            <label>Biological Sex</label>
+            <select id="sex">
+              <option value="">Select</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other / Prefer not to say</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Height (cm)</label>
+            <input type="number" id="height" min="100" max="250" placeholder="e.g. 170" />
+          </div>
+          <div class="field">
+            <label>Weight (kg)</label>
+            <input type="number" id="weight" min="20" max="300" placeholder="e.g. 70" />
+          </div>
+        </div>
+
+        <!-- ── Section: Vitals ────────────── -->
+        <div class="section-label">Vitals &amp; Metabolic</div>
+        <div class="grid3">
+          <div class="field">
+            <label>Blood Pressure</label>
+            <select id="bp">
+              <option value="">Select</option>
+              <option value="normal">Normal (&lt;120/80)</option>
+              <option value="elevated">Elevated (120–129)</option>
+              <option value="high1">High Stage 1 (130–139)</option>
+              <option value="high2">High Stage 2 (≥140)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Fasting Glucose (mg/dL)</label>
+            <input type="number" id="glucose" min="50" max="400" placeholder="e.g. 90" />
+          </div>
+          <div class="field">
+            <label>Cholesterol Level</label>
+            <select id="cholesterol">
+              <option value="">Select</option>
+              <option value="optimal">Optimal (&lt;200)</option>
+              <option value="borderline">Borderline (200–239)</option>
+              <option value="high">High (≥240)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ── Section: Lifestyle ─────────── -->
+        <div class="section-label">Lifestyle Habits</div>
+
+        <!-- Sleep Slider -->
+        <div class="field slider-field" style="margin-bottom:20px">
+          <label>
+            Sleep duration per night
+            <span class="slider-val" id="sleepVal">7 hrs</span>
+          </label>
+          <input
+            type="range" id="sleep" min="3" max="12" value="7"
+            oninput="document.getElementById('sleepVal').textContent = this.value + ' hrs'; updateProgress()" />
+        </div>
+
+        <!-- Stress Slider -->
+        <div class="field slider-field" style="margin-bottom:20px">
+          <label>
+            Stress level (1–10)
+            <span class="slider-val" id="stressVal">5</span>
+          </label>
+          <input
+            type="range" id="stress" min="1" max="10" value="5"
+            oninput="document.getElementById('stressVal').textContent = this.value; updateProgress()" />
+        </div>
+
+        <!-- Physical Activity -->
+        <div style="margin-bottom:20px">
+          <label class="field-group-label">Physical Activity Level</label>
+          <div class="toggle-group" id="activityGroup">
+            <button class="toggle-btn" onclick="selectToggle(this,'activityGroup')">🛋️ Sedentary</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'activityGroup')">🚶 Light (1-2x/wk)</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'activityGroup')">🏃 Moderate (3-5x/wk)</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'activityGroup')">💪 Vigorous (6+/wk)</button>
+          </div>
+        </div>
+
+        <!-- Diet Quality -->
+        <div style="margin-bottom:20px">
+          <label class="field-group-label">Diet Quality</label>
+          <div class="toggle-group" id="dietGroup">
+            <button class="toggle-btn" onclick="selectToggle(this,'dietGroup')">🍔 Poor</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'dietGroup')">🍕 Average</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'dietGroup')">🥗 Good</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'dietGroup')">🥦 Excellent</button>
+          </div>
+        </div>
+
+        <!-- Smoking -->
+        <div style="margin-bottom:20px">
+          <label class="field-group-label">Smoking Status</label>
+          <div class="toggle-group" id="smokingGroup">
+            <button class="toggle-btn" onclick="selectToggle(this,'smokingGroup')">🚭 Never</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'smokingGroup')">✅ Former smoker</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'smokingGroup')">🚬 Current smoker</button>
+          </div>
+        </div>
+
+        <!-- Alcohol -->
+        <div style="margin-bottom:28px">
+          <label class="field-group-label">Alcohol Consumption</label>
+          <div class="toggle-group" id="alcoholGroup">
+            <button class="toggle-btn" onclick="selectToggle(this,'alcoholGroup')">🚫 None</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'alcoholGroup')">🍷 Occasional</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'alcoholGroup')">🍺 Moderate</button>
+            <button class="toggle-btn" onclick="selectToggle(this,'alcoholGroup')">⚠️ Heavy</button>
+          </div>
+        </div>
+
+        <!-- ── Section: Family History ────── -->
+        <div class="section-label">Family &amp; Medical History</div>
+        <div class="checkbox-group">
+          <label class="check-item">
+            <input type="checkbox" id="famDiabetes" />
+            <div class="check-box"></div>
+            <div class="check-label">
+              Family history of Diabetes
+              <span>Parent, sibling, or grandparent diagnosed with Type 2 diabetes</span>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="famHeart" />
+            <div class="check-box"></div>
+            <div class="check-label">
+              Family history of Heart Disease
+              <span>First-degree relative with cardiovascular disease before age 55</span>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="famHypert" />
+            <div class="check-box"></div>
+            <div class="check-label">
+              Family history of Hypertension
+              <span>Parent or sibling with high blood pressure</span>
+            </div>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="prevCond" />
+            <div class="check-box"></div>
+            <div class="check-label">
+              Pre-existing metabolic condition
+              <span>PCOS, pre-diabetes, thyroid disorder, or similar</span>
+            </div>
+          </label>
+        </div>
+
+        <button class="submit-btn" onclick="runPrediction()">
+          <span>🔬</span> Analyse My Health Risk
+        </button>
+      </div><!-- /form-body -->
+    </div><!-- /form-card -->
+
+    <!-- ── Result Card ────────────────────── -->
+    <div class="result-card" id="resultCard">
+      <div class="result-header">
+        <div>
+          <div class="result-title" id="resultTitle">Your Risk Assessment</div>
+          <div class="result-sub"  id="resultSub">Based on 12 lifestyle and metabolic factors</div>
+        </div>
+        <div class="risk-badge" id="overallBadge">Medium Risk</div>
+      </div>
+      <div class="result-body">
+        <div class="section-label">Disease Risk Breakdown</div>
+        <div class="risk-meters" id="riskMeters"></div>
+
+        <div class="section-label">Personalised Recommendations</div>
+        <div class="recs-grid" id="recsGrid"></div>
+
+        <button class="reset-btn" onclick="resetForm()">← Reassess Profile</button>
+      </div>
+    </div>
+
+  </div><!-- /wrap -->
+
+  <!-- ── Footer ────────────────────────────── -->
+  <footer>
+    <div class="wrap">
+      <p>
+        <strong>VitaCheck</strong> — AI-Powered Lifestyle Disease Risk Predictor<br />
+        This tool uses a weighted scoring model based on established clinical risk factors.<br />
+        Not a diagnostic tool. Consult a physician for medical advice.
+      </p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+
+</body>
+</html>
